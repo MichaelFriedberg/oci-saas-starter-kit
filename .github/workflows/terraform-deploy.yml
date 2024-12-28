@@ -35,11 +35,14 @@ jobs:
           terraform_version: 1.5.0
 
       - name: Initialize Terraform
+        working-directory: ./cloud-infrastructure
         run: terraform init
 
       - name: Plan Terraform
+        working-directory: ./cloud-infrastructure
         run: terraform plan
 
       - name: Apply Terraform
         if: github.event_name == 'push'
+        working-directory: ./cloud-infrastructure
         run: terraform apply -auto-approve
