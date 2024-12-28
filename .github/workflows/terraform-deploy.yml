@@ -28,6 +28,7 @@ jobs:
           terraform_version: 1.5.0
 
       - name: Initialize Terraform
+        working-directory: ./cloud-infrastructure
         env:
           TF_VAR_tenancy_ocid: ${{ secrets.OCI_TENANCY_OCID }}
           TF_VAR_compartment_ocid: ${{ secrets.OCI_COMPARTMENT_OCID }}
@@ -38,6 +39,7 @@ jobs:
         run: terraform init
 
       - name: Plan Terraform
+        working-directory: ./cloud-infrastructure
         env:
           TF_VAR_tenancy_ocid: ${{ secrets.OCI_TENANCY_OCID }}
           TF_VAR_compartment_ocid: ${{ secrets.OCI_COMPARTMENT_OCID }}
@@ -49,6 +51,7 @@ jobs:
 
       - name: Apply Terraform
         if: github.event_name == 'push'
+        working-directory: ./cloud-infrastructure
         env:
           TF_VAR_tenancy_ocid: ${{ secrets.OCI_TENANCY_OCID }}
           TF_VAR_compartment_ocid: ${{ secrets.OCI_COMPARTMENT_OCID }}
