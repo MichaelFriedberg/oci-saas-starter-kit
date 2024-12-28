@@ -21,6 +21,9 @@ jobs:
           echo "${{ secrets.HCP_TFC_TOKEN }}" > ~/.terraformrc
           echo 'credentials "app.terraform.io" { token = "'"${{ secrets.HCP_TFC_TOKEN }}"'" }' > ~/.terraformrc
 
+      - name: Verify Terraform Cloud Authentication
+        run: terraform login -verify-only
+
       - name: Setup OCI Configuration
         run: |
           mkdir -p /home/runner/.oci
