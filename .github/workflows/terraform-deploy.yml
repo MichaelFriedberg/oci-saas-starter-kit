@@ -10,14 +10,7 @@ jobs:
   terraform:
     runs-on: ubuntu-latest
 
-    env:
-      # Terraform variables for OCI
-      TF_VAR_tenancy_ocid: ${{ secrets.OCI_TENANCY_OCID }}
-      TF_VAR_compartment_ocid: ${{ secrets.OCI_COMPARTMENT_OCID }}
-      TF_VAR_user_ocid: ${{ secrets.OCI_USER_OCID }}
-      TF_VAR_fingerprint: ${{ secrets.OCI_FINGERPRINT }}
-      TF_VAR_private_key_path: "/home/runner/.oci/oci_api_key.pem"
-      TF_VAR_region: "us-ashburn-1"
+    environment: dev # Specify the environment to use the environment-specific secrets
 
     steps:
       - name: Checkout repository
@@ -35,14 +28,32 @@ jobs:
           terraform_version: 1.5.0
 
       - name: Initialize Terraform
-        working-directory: ./cloud-infrastructure
+        env:
+          TF_VAR_tenancy_ocid: ${{ secrets.OCI_TENANCY_OCID }}
+          TF_VAR_compartment_ocid: ${{ secrets.OCI_COMPARTMENT_OCID }}
+          TF_VAR_user_ocid: ${{ secrets.OCI_USER_OCID }}
+          TF_VAR_fingerprint: ${{ secrets.OCI_FINGERPRINT }}
+          TF_VAR_private_key_path: "/home/runner/.oci/oci_api_key.pem"
+          TF_VAR_region: ${{ secrets.OCI_REGION }}
         run: terraform init
 
       - name: Plan Terraform
-        working-directory: ./cloud-infrastructure
+        env:
+          TF_VAR_tenancy_ocid: ${{ secrets.OCI_TENANCY_OCID }}
+          TF_VAR_compartment_ocid: ${{ secrets.OCI_COMPARTMENT_OCID }}
+          TF_VAR_user_ocid: ${{ secrets.OCI_USER_OCID }}
+          TF_VAR_fingerprint: ${{ secrets.OCI_FINGERPRINT }}
+          TF_VAR_private_key_path: "/home/runner/.oci/oci_api_key.pem"
+          TF_VAR_region: ${{ secrets.OCI_REGION }}
         run: terraform plan
 
       - name: Apply Terraform
         if: github.event_name == 'push'
-        working-directory: ./cloud-infrastructure
+        env:
+          TF_VAR_tenancy_ocid: ${{ secrets.OCI_TENANCY_OCID }}
+          TF_VAR_compartment_ocid: ${{ secrets.OCI_COMPARTMENT_OCID }}
+          TF_VAR_user_ocid: ${{ secrets.OCI_USER_OCID }}
+          TF_VAR_fingerprint: ${{ secrets.OCI_FINGERPRINT }}
+          TF_VAR_private_key_path: "/home/runner/.oci/oci_api_key.pem"
+          TF_VAR_region: ${{ secrets.OCI_REGION }}
         run: terraform apply -auto-approve
