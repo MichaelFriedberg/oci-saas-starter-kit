@@ -10,11 +10,16 @@ jobs:
   terraform:
     runs-on: ubuntu-latest
 
-    environment: dev # Specify the environment to use the environment-specific secrets
+    environment: dev
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+
+      - name: Authenticate with Terraform Cloud
+        run: |
+          echo "${{ secrets.HCP_TFC_TOKEN }}" > ~/.terraformrc
+          echo 'credentials "app.terraform.io" { token = "'"${{ secrets.HCP_TFC_TOKEN }}"'" }' > ~/.terraformrc
 
       - name: Setup OCI Configuration
         run: |
@@ -48,15 +53,6 @@ jobs:
           TF_VAR_private_key_path: "/home/runner/.oci/oci_api_key.pem"
           TF_VAR_region: ${{ secrets.OCI_REGION }}
         run: terraform plan -out=plan.out
-        # Store the plan output as an artifact for further review
-        continue-on-error: false
-
-      - name: Save Terraform Plan as Artifact
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: terraform-plan
-          path: ./cloud-infrastructure/plan.out
 
       - name: Apply Terraform
         if: github.event_name == 'push'
