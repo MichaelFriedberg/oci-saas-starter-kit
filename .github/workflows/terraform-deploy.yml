@@ -21,6 +21,10 @@ jobs:
           echo "${{ secrets.HCP_TFC_TOKEN }}" > ~/.terraformrc
           echo 'credentials "app.terraform.io" { token = "'"${{ secrets.HCP_TFC_TOKEN }}"'" }' > ~/.terraformrc
 
+      - name: Initialize Terraform
+        working-directory: ./cloud-infrastructure
+        run: terraform init
+
       - name: Verify Terraform Cloud Authentication
         working-directory: ./cloud-infrastructure
         run: terraform workspace list
@@ -35,17 +39,6 @@ jobs:
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.5.0
-
-      - name: Initialize Terraform
-        working-directory: ./cloud-infrastructure
-        env:
-          TF_VAR_tenancy_ocid: ${{ secrets.OCI_TENANCY_OCID }}
-          TF_VAR_compartment_ocid: ${{ secrets.OCI_COMPARTMENT_OCID }}
-          TF_VAR_user_ocid: ${{ secrets.OCI_USER_OCID }}
-          TF_VAR_fingerprint: ${{ secrets.OCI_FINGERPRINT }}
-          TF_VAR_private_key_path: "/home/runner/.oci/oci_api_key.pem"
-          TF_VAR_region: ${{ secrets.OCI_REGION }}
-        run: terraform init -migrate-state
 
       - name: Plan Terraform
         working-directory: ./cloud-infrastructure
